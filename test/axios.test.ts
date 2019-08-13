@@ -1,4 +1,4 @@
-import DummyClass from '../src/axios'
+import DummyClass from '../src/core/axios'
 
 /**
  * Dummy test
