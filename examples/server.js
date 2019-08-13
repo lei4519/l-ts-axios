@@ -16,6 +16,7 @@ const compiler = webpack(WebpackConfig)
 
 app.use(webpackDevMiddleware(compiler, {
   publicPath: '/__build__/',
+  devtool: 'eval-source-map',
   stats: {
     colors: true,
     chunks: false
@@ -59,7 +60,7 @@ registerMoreRouter()
 
 app.use(router)
 
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8081
 module.exports = app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}, Ctrl+C to stop`)
 })

@@ -4,7 +4,7 @@ const webpack = require('webpack')
 
 module.exports = {
   mode: 'development',
-
+  devtool: 'eval-source-map',
   /**
    * 我们会在 examples 目录下建多个子目录
    * 我们会把不同章节的 demo 放到不同的子目录中
