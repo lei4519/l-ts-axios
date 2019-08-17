@@ -5,15 +5,18 @@ export class AxiosInterceptorManager<T> {
   constructor() {
     this.interceptors = new Set()
   }
-  use(resolve: ResolveFn<T>, reject?: RejectFn): Interceptor<T> {
+  use(resolved: ResolveFn<T>, rejectd?: RejectFn): Interceptor<T> {
     const interceptor = {
-      resolve,
-      reject
+      resolved,
+      rejectd
     }
     this.interceptors.add(interceptor)
     return interceptor
   }
   eject(interceptor: Interceptor<T>) {
     this.interceptors.delete(interceptor)
+  }
+  forEach(fn: any): void {
+    this.interceptors.forEach(fn)
   }
 }

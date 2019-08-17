@@ -1,7 +1,31 @@
 import dispatchRequest from './dispatchRequest'
-import { AxiosPromise, AxiosRequestConfig, Method } from '../types'
-
+import {
+  AxiosPromise,
+  AxiosRequestConfig,
+  Method,
+  AxiosResponse,
+  ResolveFn,
+  RejectFn
+} from '../types'
+import { AxiosInterceptorManager } from './InterceptorManager'
+interface Interceptor {
+  request: AxiosInterceptorManager<AxiosRequestConfig>
+  response: AxiosInterceptorManager<AxiosResponse>
+}
+interface PromiseChain<T> {
+  resolved: ResolveFn<T> | ((config: AxiosRequestConfig) => AxiosPromise)
+  rejected?: RejectFn
+}
 export default class Axios {
+  interceptor: Interceptor
+  defaults: AxiosRequestConfig
+  constructor(initConfig: AxiosRequestConfig) {
+    this.interceptor = {
+      request: new AxiosInterceptorManager<AxiosRequestConfig>(),
+      response: new AxiosInterceptorManager<AxiosResponse>()
+    }
+    this.defaults = initConfig
+  }
   request(url: any, config?: any): AxiosPromise {
     if (typeof url === 'string') {
       if (!config) {
@@ -13,7 +37,24 @@ export default class Axios {
     } else {
       config = url
     }
-    return dispatchRequest(config)
+    const chain: PromiseChain<any>[] = [
+      {
+        resolved: dispatchRequest,
+        rejected: undefined
+      }
+    ]
+    this.interceptor.request.forEach((interceptor: any) => {
+      chain.unshift(interceptor)
+    })
+    this.interceptor.response.forEach((interceptor: any) => {
+      chain.unshift(interceptor)
+    })
+    let promise = Promise.resolve(config)
+    while (chain.length) {
+      const { resolved, rejected } = chain.shift()!
+      promise = promise.then(resolved, rejected)
+    }
+    return promise
   }
   get = this._requestMethodWithoutData('GET')
   delete = this._requestMethodWithoutData('DELETE')
