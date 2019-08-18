@@ -8,6 +8,7 @@ import {
   RejectFn
 } from '../types'
 import { AxiosInterceptorManager } from './InterceptorManager'
+import mergeConfig from './mergeConfig'
 interface Interceptor {
   request: AxiosInterceptorManager<AxiosRequestConfig>
   response: AxiosInterceptorManager<AxiosResponse>
@@ -37,6 +38,7 @@ export default class Axios {
     } else {
       config = url
     }
+    config = mergeConfig(this.defaults, config)
     const chain: PromiseChain<any>[] = [
       {
         resolved: dispatchRequest,
@@ -56,6 +58,7 @@ export default class Axios {
     }
     return promise
   }
+
   get = this._requestMethodWithoutData('GET')
   delete = this._requestMethodWithoutData('DELETE')
   options = this._requestMethodWithoutData('OPTIONS')

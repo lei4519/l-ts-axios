@@ -1,5 +1,5 @@
-import { AxiosRequestConfig, Method } from '../types'
-import { isPlainObject } from '../helpers/utils'
+import { AxiosRequestConfig } from '../types'
+import { isPlainObject, deepMerge } from '../helpers/utils'
 interface Strat {
   [propName: string]: (
     val1: keyof AxiosRequestConfig,
