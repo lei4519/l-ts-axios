@@ -12,7 +12,7 @@ export default function mergeConfig(
   config2: AxiosRequestConfig = {}
 ): AxiosRequestConfig {
   const fromVal2List: Array<keyof AxiosRequestConfig> = ['url', 'params', 'data']
-  const fromKeysList: Array<keyof AxiosRequestConfig> = ['headers']
+  const fromKeysList: Array<keyof AxiosRequestConfig> = ['headers', 'auth']
   const strat: Strat = {
     default: function defaultStrat(val1, val2) {
       return val2 || val1

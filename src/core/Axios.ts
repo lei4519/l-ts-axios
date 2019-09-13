@@ -1,4 +1,4 @@
-import dispatchRequest from './dispatchRequest'
+import dispatchRequest, { transformURL } from './dispatchRequest'
 import {
   AxiosPromise,
   AxiosRequestConfig,
@@ -18,10 +18,10 @@ interface PromiseChain<T> {
   rejected?: RejectFn
 }
 export default class Axios {
-  interceptor: Interceptor
+  interceptors: Interceptor
   defaults: AxiosRequestConfig
   constructor(initConfig: AxiosRequestConfig) {
-    this.interceptor = {
+    this.interceptors = {
       request: new AxiosInterceptorManager<AxiosRequestConfig>(),
       response: new AxiosInterceptorManager<AxiosResponse>()
     }
@@ -45,10 +45,10 @@ export default class Axios {
         rejected: undefined
       }
     ]
-    this.interceptor.request.forEach((interceptor: any) => {
+    this.interceptors.request.forEach((interceptor: any) => {
       chain.unshift(interceptor)
     })
-    this.interceptor.response.forEach((interceptor: any) => {
+    this.interceptors.response.forEach((interceptor: any) => {
       chain.unshift(interceptor)
     })
     let promise = Promise.resolve(config)
@@ -66,7 +66,10 @@ export default class Axios {
   post = this._requestMethodWithData('POST')
   put = this._requestMethodWithData('PUT')
   patch = this._requestMethodWithData('PATCH')
-
+  getURI (config?: AxiosRequestConfig) {
+    config = mergeConfig(this.defaults, config)
+    return transformURL(config)
+  }
   _requestMethodWithoutData(method: Method) {
     return (url: string, config?: AxiosRequestConfig): AxiosPromise => {
       return this.request(

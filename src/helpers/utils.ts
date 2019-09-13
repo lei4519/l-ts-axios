@@ -13,7 +13,8 @@ export const isPlainObject = isType<Object>('Object')
 export const isDate = isType<Date>('Date')
 
 export const isDef = (val: any): boolean => val !== void 0 && val !== null
-
+export const isFormData = (val: any): val is FormData => val !== void 0 && val instanceof FormData
+export const isURLSearchParams = (val: any): val is URLSearchParams => val !== void 0 && val instanceof URLSearchParams
 export function extend<T, U>(to: T, from: U): T & U {
   for (let key in from) {
     ;(to as T & U)[key] = from[key] as any
