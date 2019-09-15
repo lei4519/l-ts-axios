@@ -2,7 +2,6 @@ import { deepMerge, isPlainObject } from './utils'
 import { Method } from '../types'
 
 function normalizeHeaderName(headers: any, normallizeName: string): void {
-  if (!headers) return
   Object.keys(headers).forEach(name => {
     if (name !== normallizeName && name.toLowerCase() === normallizeName.toLowerCase()) {
       headers[normallizeName] = headers[name]
@@ -12,9 +11,13 @@ function normalizeHeaderName(headers: any, normallizeName: string): void {
 }
 
 export function processHeaders(headers: any, data: any): any {
+  if (!isPlainObject(headers)) return headers
   normalizeHeaderName(headers, 'Content-Type')
   if (isPlainObject(data) && headers && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json;charset=utf-8'
+  }
+  if ((typeof data === 'string' || data === false) && headers && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/x-www-form-urlencoded'
   }
   return headers
 }
@@ -23,9 +26,10 @@ export function parseHeaders(headers: string): object {
   const parsed = Object.create(null)
   if (!headers) return parsed
   const split = /(?<key>.+?):\s(?<val>.+)/
-  return parsed.split('\r\n').reduce((parsed: object, str: string): object => {
+  return headers.split('\n').reduce((parsed: object, str: string): object => {
+    str = str.trim()
+    if (!str) return parsed
     const { key, val } = split.exec(str)!.groups!
-    if (!key) return parsed
     // @ts-ignore
     parsed[key.toLowerCase().trim()] = val.trim()
     return parsed

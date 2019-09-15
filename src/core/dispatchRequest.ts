@@ -7,9 +7,17 @@ import transform from './transform'
 export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
   throwIfCancellationRequested(config)
   processConfig(config)
-  return xhr(config).then(res => {
-    return transformResponseData(res)
-  })
+  return xhr(config).then(
+    res => {
+      return transformResponseData(res)
+    },
+    e => {
+      if (e && e.response) {
+        e.response = transformResponseData(e.response)
+      }
+      return Promise.reject(e)
+    }
+  )
 }
 
 function processConfig(config: AxiosRequestConfig): void {
@@ -19,7 +27,7 @@ function processConfig(config: AxiosRequestConfig): void {
 }
 
 export function transformURL(config: AxiosRequestConfig): string {
-  let {url, params, baseURL, paramsSerializer} = config
+  let { url, params, baseURL, paramsSerializer } = config
   if (baseURL && !isAbsoluteURL(url!)) {
     url = combineURL(baseURL, url!)
   }

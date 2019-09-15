@@ -16,7 +16,11 @@ function encode(val: string): string {
     .replace(/%5D/gi, ']')
 }
 
-export function buildURL(url: string, params?: any, paramsSerializer?: (params: any) => string): string {
+export function buildURL(
+  url: string,
+  params?: any,
+  paramsSerializer?: (params: any) => string
+): string {
   if (!isDef(params)) return url
   let serializedParams
   if (paramsSerializer) {
@@ -57,25 +61,23 @@ export function buildURL(url: string, params?: any, paramsSerializer?: (params: 
   return url
 }
 
-export function isAbsoluteURL (url: string): boolean {
+export function isAbsoluteURL(url: string): boolean {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url)
 }
 
-export function combineURL (baseURL: string, relativeURL: string): string {
-  return relativeURL
-    ? baseURL.replace(/\/+$/, '/') + relativeURL.replace(/^\/+/, '')
-    : baseURL
+export function combineURL(baseURL: string, relativeURL: string): string {
+  return relativeURL ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '') : baseURL
 }
 
 export function isURLSameOrigin(requestURL: string): boolean {
-  const {protocol, host} = resolveURL(requestURL)
+  const { protocol, host } = resolveURL(requestURL)
   return protocol === curProtocol && host === curHost
 }
 const urlParsingNode = document.createElement('a')
-const { protocol: curProtocol, host: curHost} = window.location
+const { protocol: curProtocol, host: curHost } = resolveURL(window.location.href)
 
 function resolveURL(url: string): URLOrigin {
   urlParsingNode.setAttribute('href', url)
-  const {protocol, host} = urlParsingNode
+  const { protocol, host } = urlParsingNode
   return { protocol, host }
 }

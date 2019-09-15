@@ -10,7 +10,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     const {
       url,
       method = 'get',
-      data = null, headers,
+      data = null,
+      headers = {},
       responseType,
       timeOut,
       cancelToken,
@@ -96,7 +97,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
     function processCancel() {
       if (cancelToken) {
-        cancelToken.promise.then((reason) => {
+        cancelToken.promise.then(reason => {
           request.abort()
           reject(reason)
         })
@@ -107,7 +108,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       if (validateStatus!(status)) {
         resolve(response)
       } else {
-        reject(createError(`Timeout Error`, config, null, request, response))
+        reject(
+          createError(`Request failed with status code ${status}`, config, null, request, response)
+        )
       }
     }
   })

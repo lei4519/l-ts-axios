@@ -39,6 +39,7 @@ export default class Axios {
       config = url
     }
     config = mergeConfig(this.defaults, config)
+    config.method = config.method.toLowerCase()
     const chain: PromiseChain<any>[] = [
       {
         resolved: dispatchRequest,
@@ -49,7 +50,7 @@ export default class Axios {
       chain.unshift(interceptor)
     })
     this.interceptors.response.forEach((interceptor: any) => {
-      chain.unshift(interceptor)
+      chain.push(interceptor)
     })
     let promise = Promise.resolve(config)
     while (chain.length) {
@@ -66,7 +67,7 @@ export default class Axios {
   post = this._requestMethodWithData('POST')
   put = this._requestMethodWithData('PUT')
   patch = this._requestMethodWithData('PATCH')
-  getURI (config?: AxiosRequestConfig) {
+  getURI(config?: AxiosRequestConfig) {
     config = mergeConfig(this.defaults, config)
     return transformURL(config)
   }
